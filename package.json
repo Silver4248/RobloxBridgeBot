@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@discordjs/rest": "^2.5.0",
+    "discord-api-types": "^0.38.2"
+  },
+  "name": "robloxbridgebot",
+  "version": "1.0.0",
+  "description": "A discord bot that can access discord to roblox",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Silver4248/RobloxBridgeBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Silver4248/RobloxBridgeBot/issues"
+  },
+  "homepage": "https://github.com/Silver4248/RobloxBridgeBot#readme"
+}
