@@ -7,8 +7,8 @@ const path = require('path');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
 
-// Load commands
-const commandsPath = path.join(__dirname, 'commands');
+// ✅ Load commands from src/commands
+const commandsPath = path.join(__dirname, 'src', 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
@@ -22,7 +22,7 @@ for (const file of commandFiles) {
     }
 }
 
-// Register commands
+// ✅ Register commands
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 (async () => {
@@ -40,7 +40,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
     }
 })();
 
-// Handle interactions
+// ✅ Handle slash command interactions
 client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
@@ -59,4 +59,4 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);

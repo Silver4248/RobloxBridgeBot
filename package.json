@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "@discordjs/rest": "^2.5.0",
-    "discord-api-types": "^0.38.2"
+    "discord-api-types": "^0.38.2",
+    "discord.js": "^14.19.2"
   },
   "name": "robloxbridgebot",
   "version": "1.0.0",
   "description": "A discord bot that can access discord to roblox",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
