@@ -377,6 +377,58 @@ async def delete_command_cmd(interaction: discord.Interaction):
     
     await interaction.response.send_message("Select command to delete:", view=view, ephemeral=True)
 
+# View Service Info
+@bot.tree.command(name="service_info", description="View your service details (Server Owner only)")
+async def service_info(interaction: discord.Interaction):
+    if interaction.user.id != interaction.guild.owner_id:
+        return await interaction.response.send_message("❌ Only the server owner can view service info", ephemeral=True)
+    
+    if interaction.guild.id not in services:
+        return await interaction.response.send_message("❌ No service exists. Create one with `/create_service`", ephemeral=True)
+    
+    service = services[interaction.guild.id]
+    
+    embed = Embed(
+        title="🔧 Service Information",
+        color=Color.blue()
+    )
+    
+    embed.add_field(
+        name="Service URL",
+        value=f"`{service['url']}`",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="API Key",
+        value=f"`{service['api_key']}`",
+        inline=False
+    )
+    
+    embed.add_field(
+        name="Commands",
+        value=f"{len(service['commands'])} command(s) created",
+        inline=True
+    )
+    
+    embed.add_field(
+        name="Authorized Users",
+        value=f"{len(service['authorized_users'])} user(s)",
+        inline=True
+    )
+    
+    if service['commands']:
+        cmd_list = [f"`!{cmd['command_name']}`" for cmd in service['commands']]
+        embed.add_field(
+            name="Available Commands",
+            value=", ".join(cmd_list),
+            inline=False
+        )
+    
+    embed.set_footer(text="⚠️ Keep your API key secure!")
+    
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
 # Mod Panel
 class ModPanelView(ui.View):
     def __init__(self, guild_id: int):
