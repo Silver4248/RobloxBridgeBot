@@ -291,6 +291,92 @@ async def create_command(interaction: discord.Interaction):
     
     await interaction.response.send_modal(CommandModal())
 
+# Delete Service Command
+@bot.tree.command(name="delete_service", description="Delete your service (Server Owner only)")
+async def delete_service(interaction: discord.Interaction):
+    if interaction.user.id != interaction.guild.owner_id:
+        return await interaction.response.send_message("❌ Only the server owner can delete services", ephemeral=True)
+    
+    if interaction.guild.id not in services:
+        return await interaction.response.send_message("❌ No service exists", ephemeral=True)
+    
+    view = ui.View(timeout=60)
+    
+    async def confirm_callback(btn_interaction: discord.Interaction):
+        if await shutdown_service(interaction.guild.id):
+            embed = Embed(
+                title="✅ Service Deleted",
+                description="Your service has been permanently deleted",
+                color=Color.green()
+            )
+            await btn_interaction.response.send_message(embed=embed, ephemeral=True)
+        else:
+            await btn_interaction.response.send_message("❌ Failed to delete", ephemeral=True)
+    
+    async def cancel_callback(btn_interaction: discord.Interaction):
+        await btn_interaction.response.send_message("Cancelled", ephemeral=True)
+    
+    confirm_btn = ui.Button(label="Confirm Delete", style=discord.ButtonStyle.danger)
+    confirm_btn.callback = confirm_callback
+    cancel_btn = ui.Button(label="Cancel", style=discord.ButtonStyle.secondary)
+    cancel_btn.callback = cancel_callback
+    
+    view.add_item(confirm_btn)
+    view.add_item(cancel_btn)
+    
+    service = services[interaction.guild.id]
+    embed = Embed(
+        title="⚠️ Delete Service?",
+        description=f"This will permanently delete:\n• {len(service['commands'])} commands\n• All authorizations\n• Service configuration",
+        color=Color.red()
+    )
+    
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+# Delete Command
+@bot.tree.command(name="delete_command", description="Delete a command (Server Owner only)")
+async def delete_command_cmd(interaction: discord.Interaction):
+    if interaction.user.id != interaction.guild.owner_id:
+        return await interaction.response.send_message("❌ Only the server owner can delete commands", ephemeral=True)
+    
+    if interaction.guild.id not in services:
+        return await interaction.response.send_message("❌ No service exists", ephemeral=True)
+    
+    service = services[interaction.guild.id]
+    
+    if not service['commands']:
+        return await interaction.response.send_message("❌ No commands to delete", ephemeral=True)
+    
+    options = []
+    for idx, cmd in enumerate(service['commands']):
+        options.append(discord.SelectOption(
+            label=cmd['command_name'],
+            value=str(idx),
+            description=cmd['full_command'][:100]
+        ))
+    
+    select = ui.Select(placeholder="Select command to delete", options=options[:25])
+    
+    async def select_callback(select_interaction):
+        idx = int(select_interaction.data["values"][0])
+        deleted_cmd = service['commands'].pop(idx)
+        
+        service_id = f"{interaction.guild.id}-{interaction.guild.id}-service_{interaction.guild.id}"
+        web_service.update_service_commands(service_id, service['commands'])
+        
+        embed = Embed(
+            title="✅ Command Deleted",
+            description=f"Command `{deleted_cmd['command_name']}` has been deleted",
+            color=Color.green()
+        )
+        await select_interaction.response.send_message(embed=embed, ephemeral=True)
+    
+    select.callback = select_callback
+    view = ui.View(timeout=60)
+    view.add_item(select)
+    
+    await interaction.response.send_message("Select command to delete:", view=view, ephemeral=True)
+
 # Mod Panel
 class ModPanelView(ui.View):
     def __init__(self, guild_id: int):
