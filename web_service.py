@@ -19,7 +19,7 @@ class WebService:
         self.services = {}
         self.runners = {}
         self.base_port = 8080
-        self.public_url = os.getenv('PUBLIC_URL', 'http://your-server.com')
+        self.public_url = "https://robloxbridgebot-production.up.railway.app"  #os.getenv('PUBLIC_URL', 'http://your-server.com')
         
     def _get_available_port(self):
         used_ports = {s.get('port') for s in self.services.values()}
