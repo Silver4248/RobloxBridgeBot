@@ -1,9 +1,13 @@
 import os
+from dotenv import load_dotenv
 import random
 import string
 import logging
 from datetime import datetime, timezone
 from aiohttp import web
+
+# Load environment variables
+load_dotenv()
 
 logger = logging.getLogger('web_service')
 logger.setLevel(logging.INFO)
@@ -19,7 +23,8 @@ class WebService:
         self.services = {}
         self.runners = {}
         self.base_port = 8080
-        self.public_url = "https://robloxbridgebot-production.up.railway.app"  #os.getenv('PUBLIC_URL', 'http://your-server.com')
+        # Hardcoded public URL - change this to your Railway domain
+        self.public_url = 'https://robloxbridgebot-production.up.railway.app'
         
     def _get_available_port(self):
         used_ports = {s.get('port') for s in self.services.values()}
